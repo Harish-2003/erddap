@@ -666,6 +666,26 @@ all?
                     </dokkaPlugins>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>gg.jte</groupId>
+                <artifactId>jte-maven-plugin</artifactId>
+                <version>3.2.1</version>
+                <configuration>
+                    <!-- This is the directory where your .jte files are located. -->
+                    <sourceDirectory>${project.basedir}/src/main/jte</sourceDirectory>
+                    <!-- This is the directory where compiled templates are located. -->
+                    <targetDirectory>${project.build.directory}/classes</targetDirectory>
+                    <contentType>Html</contentType>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>precompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -688,26 +708,6 @@ all?
                     <groupId>org.codehaus.plexus</groupId>
                     <artifactId>plexus-utils</artifactId>
                     <version>4.0.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>gg.jte</groupId>
-                    <artifactId>jte-maven-plugin</artifactId>
-                    <version>3.2.1</version>
-                    <configuration>
-                        <!-- This is the directory where your .jte files are located. -->
-                        <sourceDirectory>${project.basedir}/src/main/resources/jte</sourceDirectory>
-                        <!-- This is the directory where compiled templates are located. -->
-                        <targetDirectory>${project.basedir}/src/main/jte-classes</targetDirectory>
-                        <contentType>Html</contentType>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <phase>process-classes</phase>
-                            <goals>
-                                <goal>precompile</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
