@@ -10,6 +10,7 @@ import com.cohort.util.Test;
 import gov.noaa.pfel.coastwatch.pointdata.Table;
 import gov.noaa.pfel.coastwatch.util.SSR;
 import gov.noaa.pfel.erddap.GenerateDatasetsXml;
+import gov.noaa.pfel.erddap.util.EDMessages;
 import gov.noaa.pfel.erddap.util.EDStatic;
 import java.nio.file.Path;
 import java.util.TimeZone;
@@ -102,7 +103,10 @@ class EDDTableFromAsciiFilesTests {
             + "    String _CoordinateAxisType \"Time\";\n"
             + "    Float64 actual_range 1.1045376e+9, 1.167606e+9;\n"
             + "    String axis \"T\";\n"
-            + "    String ioos_category \"Time\";\n"
+            // Sometimes uppercase, sometimes lowercase
+            + (results.indexOf("String ioos_category \"time\";") > -1
+                ? "    String ioos_category \"time\";\n"
+                : "    String ioos_category \"Time\";\n")
             + "    String long_name \"Time\";\n"
             + "    String standard_name \"time\";\n"
             + "    String time_origin \"01-JAN-1970 00:00:00\";\n"
@@ -110,7 +114,7 @@ class EDDTableFromAsciiFilesTests {
             + "  }\n"
             + "  station {\n"
             + "    String cf_role \"timeseries_id\";\n"
-            + "    String ioos_category \"Identifier\";\n"
+            + "    String ioos_category \"identifier\";\n" // Make sure lowercase categories pass
             + "    String long_name \"Station\";\n"
             + "  }\n"
             + "  wd {\n"
@@ -4072,6 +4076,7 @@ class EDDTableFromAsciiFilesTests {
   /** testGenerateDatasetsXml */
   @org.junit.jupiter.api.Test
   void testGenerateDatasetsXml() throws Throwable {
+    int language = EDMessages.DEFAULT_LANGUAGE;
     // testVerboseOn();
     // String2.log("\n*** EDDTableFromAsciiFiles.testGenerateDatasetsXml()");
     String dir = Path.of(EDDTestDataset.class.getResource("/data/ascii/").toURI()).toString() + "/";
@@ -4361,7 +4366,7 @@ class EDDTableFromAsciiFilesTests {
     EDD.deleteCachedDatasetInfo(tDatasetID);
     EDD edd = EDDTableFromAsciiFiles.oneFromXmlFragment(null, results);
     Test.ensureEqual(edd.datasetID(), tDatasetID, "");
-    Test.ensureEqual(edd.title(), "The Newer Title!", "");
+    Test.ensureEqual(edd.title(language), "The Newer Title!", "");
     Test.ensureEqual(
         String2.toCSSVString(edd.dataVariableDestinationNames()),
         "stationID, longitude, latitude, altitude, time, station, wd, wspd, atmp, wtmp, wtmp_2, test_parens_not_at_end",
@@ -4678,7 +4683,7 @@ class EDDTableFromAsciiFilesTests {
   @TagExternalERDDAP
   void testGenerateDatasetsXml2() throws Throwable {
     // testVerboseOn();
-
+    int language = EDMessages.DEFAULT_LANGUAGE;
     String sourceUrl =
         "https://coastwatch.pfeg.noaa.gov/erddap/tabledap/cwwcNDBCMet.csv?station%2Ctime%2Catmp%2Cwtmp&station=%2241004%22&time%3E=now-1year";
     String destDir = File2.getSystemTempDirectory();
@@ -4863,7 +4868,7 @@ class EDDTableFromAsciiFilesTests {
     EDD.deleteCachedDatasetInfo(tDatasetID);
     EDD edd = EDDTableFromAsciiFiles.oneFromXmlFragment(null, results);
     Test.ensureEqual(edd.datasetID(), tDatasetID, "");
-    Test.ensureEqual(edd.title(), "The Newer Title!", "");
+    Test.ensureEqual(edd.title(language), "The Newer Title!", "");
     Test.ensureEqual(
         String2.toCSSVString(edd.dataVariableDestinationNames()), "station, time, atmp, wtmp", "");
   }
@@ -4871,6 +4876,7 @@ class EDDTableFromAsciiFilesTests {
   /** testGenerateDatasetsXml */
   @org.junit.jupiter.api.Test
   void testGenerateDatasetsXmlWithMV() throws Throwable {
+    int language = EDMessages.DEFAULT_LANGUAGE;
     // testVerboseOn();
     // String2.log("\n*** EDDTableFromAsciiFiles.testGenerateDatasetsXmlWithMV()");
 
@@ -5099,7 +5105,7 @@ class EDDTableFromAsciiFilesTests {
     EDD.deleteCachedDatasetInfo(tDatasetID);
     EDD edd = EDDTableFromAsciiFiles.oneFromXmlFragment(null, results);
     Test.ensureEqual(edd.datasetID(), tDatasetID, "");
-    Test.ensureEqual(edd.title(), "The Newer Title!", "");
+    Test.ensureEqual(edd.title(language), "The Newer Title!", "");
     Test.ensureEqual(
         String2.toCSSVString(edd.dataVariableDestinationNames()),
         "aString, aFloat, aFloat_with_NaN, aFloat_with_nd, aDouble, aLong, anInt, aShort, aByte",
